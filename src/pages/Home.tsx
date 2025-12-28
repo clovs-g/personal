@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Github, Linkedin, Mail, ExternalLink, MapPin } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import Button from '../components/UI/Button';
+import SideNavigation from '../components/Layout/SideNavigation';
 
 interface Profile {
   name: string;
@@ -92,6 +93,7 @@ const Home: React.FC = () => {
 
   return (
     <div className="bg-navy min-h-screen">
+      <SideNavigation />
       <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-24">
 
         {/* Hero Section */}
