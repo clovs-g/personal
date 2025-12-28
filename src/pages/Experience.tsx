@@ -1,20 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Github, Linkedin, Mail, ExternalLink, MapPin } from 'lucide-react';
+import { Github, Linkedin, Mail } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import Button from '../components/UI/Button';
 import SideNavigation from '../components/Layout/SideNavigation';
 
 interface Profile {
-  name: string;
-  title: string;
   email: string;
-  phone: string;
-  location: string;
-  bio: string;
   github_url: string | null;
   linkedin_url: string | null;
-  cv_url: string | null;
 }
 
 interface Experience {
@@ -28,26 +21,9 @@ interface Experience {
   order: number;
 }
 
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  technologies: string[];
-  github_url: string | null;
-  live_url: string | null;
-  image_url: string | null;
-  featured: boolean;
-  order: number;
-}
-
-interface Skill {
-  id: string;
-  name: string;
-  category: string;
-}
-
-const Home: React.FC = () => {
+const Experience: React.FC = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [experiences, setExperiences] = useState<Experience[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -56,8 +32,13 @@ const Home: React.FC = () => {
 
   const loadData = async () => {
     try {
-      const { data: profileRes } = await supabase.from('profile').select('*').single();
-      if (profileRes) setProfile(profileRes);
+      const [profileRes, experiencesRes] = await Promise.all([
+        supabase.from('profile').select('email, github_url, linkedin_url').single(),
+        supabase.from('experiences').select('*').order('order', { ascending: true }),
+      ]);
+
+      if (profileRes.data) setProfile(profileRes.data);
+      if (experiencesRes.data) setExperiences(experiencesRes.data);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -77,22 +58,53 @@ const Home: React.FC = () => {
     <div className="bg-navy min-h-screen relative">
       <SideNavigation />
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-24 min-h-screen flex flex-col justify-center">
+      <div className="max-w-5xl mx-auto px-6 sm:px-12 lg:px-24 py-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="max-w-4xl"
         >
-          <h1 className="text-lightest-slate text-5xl sm:text-6xl lg:text-7xl font-bold mb-3">
-            Ir Rugendabanga Clovis
+          <h1 className="text-lightest-slate text-4xl sm:text-5xl font-bold mb-12">
+            Where I've Worked
           </h1>
-          <h2 className="text-slate text-3xl sm:text-4xl lg:text-5xl font-semibold mb-8">
-            {profile?.title || 'IT Professional'}
-          </h2>
-          <p className="text-slate text-lg max-w-2xl leading-relaxed">
-            {profile?.bio || "I build accessible, pixel-perfect digital experiences for the web."}
-          </p>
+
+          <div className="space-y-12 max-w-3xl">
+            {experiences.map((exp, index) => (
+              <motion.div
+                key={exp.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="relative pl-8 border-l-2 border-lightest-navy hover:border-cyan transition-colors duration-200"
+              >
+                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-cyan"></div>
+
+                <h3 className="text-lightest-slate text-xl font-semibold mb-1">
+                  {exp.title}
+                </h3>
+
+                <div className="flex flex-wrap gap-2 items-center mb-2">
+                  <span className="text-cyan font-mono text-base">{exp.company}</span>
+                  <span className="text-slate">•</span>
+                  <span className="text-slate">{exp.location}</span>
+                </div>
+
+                <p className="text-slate text-sm font-mono mb-4">
+                  {exp.start_date} - {exp.end_date || 'Present'}
+                </p>
+
+                <ul className="space-y-2">
+                  {exp.description.map((desc, i) => (
+                    <li key={i} className="text-slate flex gap-2">
+                      <span className="text-cyan mt-1 flex-shrink-0">▹</span>
+                      <span>{desc}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
       </div>
 
@@ -131,4 +143,4 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home;
+export default Experience;

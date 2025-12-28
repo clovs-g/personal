@@ -5,6 +5,9 @@ import { useAuthStore } from './stores/authStore';
 
 import Header from './components/Layout/Header';
 import Home from './pages/Home';
+import About from './pages/About';
+import Experience from './pages/Experience';
+import Projects from './pages/Projects';
 
 import AdminLayout from './components/admin/AdminLayout';
 import ProtectedRoute from './components/admin/ProtectedRoute';
@@ -46,15 +49,10 @@ function App() {
           </Route>
 
           {/* Public Routes */}
-          <Route
-            path="/"
-            element={
-              <>
-                <Header />
-                <Home />
-              </>
-            }
-          />
+          <Route path="/" element={<><Header /><Home /></>} />
+          <Route path="/about" element={<><Header /><About /></>} />
+          <Route path="/experience" element={<><Header /><Experience /></>} />
+          <Route path="/projects" element={<><Header /><Projects /></>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
 
