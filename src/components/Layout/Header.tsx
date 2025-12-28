@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,18 +17,13 @@ const Header: React.FC = () => {
   }, []);
 
   const navigation = [
-    { name: 'About', href: '#about' },
-    { name: 'Experience', href: '#experience' },
-    { name: 'Projects', href: '#projects' },
+    { name: 'About', href: '/about' },
+    { name: 'Experience', href: '/experience' },
+    { name: 'Projects', href: '/projects' },
   ];
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
+  const handleNavClick = () => {
     setIsOpen(false);
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
   };
 
   return (
@@ -38,26 +35,24 @@ const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-24">
         <div className="flex justify-between items-center py-6">
           {/* Logo */}
-          <a
-            href="#hero"
-            onClick={(e) => handleNavClick(e, '#hero')}
+          <Link
+            to="/"
             className="text-cyan font-mono text-2xl font-bold hover:text-cyan/80 transition-colors"
           >
             RC
-          </a>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {navigation.map((item, index) => (
-              <a
+              <Link
                 key={item.name}
-                href={item.href}
-                onClick={(e) => handleNavClick(e, item.href)}
+                to={item.href}
                 className="text-light-slate hover:text-cyan transition-colors duration-200 font-mono text-sm group"
               >
                 <span className="text-cyan mr-1">0{index + 1}.</span>
                 <span className="group-hover:underline">{item.name}</span>
-              </a>
+              </Link>
             ))}
             <a
               href="/cv.pdf"
@@ -100,15 +95,15 @@ const Header: React.FC = () => {
               </div>
               <nav className="flex flex-col items-center justify-center flex-1 space-y-8">
                 {navigation.map((item, index) => (
-                  <a
+                  <Link
                     key={item.name}
-                    href={item.href}
-                    onClick={(e) => handleNavClick(e, item.href)}
+                    to={item.href}
+                    onClick={handleNavClick}
                     className="text-lightest-slate hover:text-cyan transition-colors duration-200 font-mono text-lg"
                   >
                     <span className="text-cyan mr-2">0{index + 1}.</span>
                     {item.name}
-                  </a>
+                  </Link>
                 ))}
                 <a
                   href="/cv.pdf"
