@@ -134,7 +134,7 @@ const Projects: React.FC = () => {
       filtered = filtered.filter(p =>
         p.title.toLowerCase().includes(q) ||
         p.description.toLowerCase().includes(q) ||
-        p.tech_stack.some(t => t.toLowerCase().includes(q))
+        (Array.isArray(p.tech_stack) && p.tech_stack.some(t => t.toLowerCase().includes(q)))
       );
     }
     return filtered;
@@ -291,7 +291,7 @@ const Projects: React.FC = () => {
                       {project.description}
                     </p>
                     <div className="flex flex-wrap gap-2 mb-6">
-                      {project.tech_stack.map((tech) => (
+                      {Array.isArray(project.tech_stack) && project.tech_stack.map((tech) => (
                         <span
                           key={tech}
                           className={`px-3 py-1 text-xs rounded-full font-medium ${
