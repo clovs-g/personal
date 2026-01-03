@@ -6,13 +6,11 @@ import {
   FolderOpen,
   Briefcase,
   User,
-  Settings,
   LogOut,
   Menu,
   X,
   Moon,
-  Sun,
-  FileText
+  Sun
 } from 'lucide-react';
 import { useThemeStore } from '../../stores/themeStore';
 import { useAuthStore } from '../../stores/authStore';
@@ -27,11 +25,9 @@ const AdminLayout: React.FC = () => {
 
   const navigation = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-    { name: 'Home', href: '/admin/home', icon: LayoutDashboard },
     { name: 'About', href: '/admin/about', icon: User },
+    { name: 'Experience', href: '/admin/experience', icon: Briefcase },
     { name: 'Projects', href: '/admin/projects', icon: FolderOpen },
-    { name: 'Documents', href: '/admin/documents', icon: FileText },
-    { name: 'Settings', href: '/admin/settings', icon: Settings },
   ];
 
   const handleSignOut = async () => {
@@ -52,9 +48,8 @@ const AdminLayout: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      isDark ? 'bg-gray-900' : 'bg-gray-50'
-    }`}>
+    <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-gray-900' : 'bg-gray-50'
+      }`}>
       {/* Mobile sidebar backdrop */}
       <AnimatePresence>
         {isSidebarOpen && (
@@ -69,9 +64,8 @@ const AdminLayout: React.FC = () => {
       </AnimatePresence>
 
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
-        isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-r`}>
+      <div className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-r`}>
         {/* Sidebar Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <Link to="/admin" className="flex items-center space-x-3">
@@ -87,9 +81,8 @@ const AdminLayout: React.FC = () => {
           {/* Mobile close button */}
           <button
             onClick={() => setIsSidebarOpen(false)}
-            className={`lg:hidden p-2 rounded-md ${
-              isDark ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-            }`}
+            className={`lg:hidden p-2 rounded-md ${isDark ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+              }`}
           >
             <X className="w-5 h-5" />
           </button>
@@ -101,15 +94,14 @@ const AdminLayout: React.FC = () => {
               key={item.name}
               to={item.href}
               onClick={() => setIsSidebarOpen(false)}
-              className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${
-                isActive(item.href)
-                  ? isDark 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-blue-50 text-blue-700 border-blue-200'
-                  : isDark 
-                    ? 'text-gray-300 hover:text-white hover:bg-gray-700' 
-                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
-              }`}
+              className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${isActive(item.href)
+                ? isDark
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-blue-50 text-blue-700 border-blue-200'
+                : isDark
+                  ? 'text-gray-300 hover:text-white hover:bg-gray-700'
+                  : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                }`}
             >
               <item.icon className="w-5 h-5 mr-3" />
               {item.name}
@@ -121,21 +113,19 @@ const AdminLayout: React.FC = () => {
           <div className="flex items-center justify-between">
             <button
               onClick={toggle}
-              className={`p-2 rounded-md transition-colors duration-200 ${
-                isDark 
-                  ? 'text-gray-400 hover:text-white hover:bg-gray-700' 
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-              }`}
+              className={`p-2 rounded-md transition-colors duration-200 ${isDark
+                ? 'text-gray-400 hover:text-white hover:bg-gray-700'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                }`}
             >
               {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
             <button
               onClick={handleSignOut}
-              className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 ${
-                isDark 
-                  ? 'text-gray-400 hover:text-white hover:bg-gray-700' 
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-              }`}
+              className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 ${isDark
+                ? 'text-gray-400 hover:text-white hover:bg-gray-700'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                }`}
             >
               <LogOut className="w-4 h-4 mr-2" />
               Sign Out
@@ -151,18 +141,16 @@ const AdminLayout: React.FC = () => {
           <div className="flex items-center justify-between">
             <button
               onClick={() => setIsSidebarOpen(true)}
-              className={`lg:hidden p-2 rounded-md ${
-                isDark ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-              }`}
+              className={`lg:hidden p-2 rounded-md ${isDark ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                }`}
             >
               <Menu className="w-5 h-5" />
             </button>
             <div className="flex items-center space-x-4">
               <Link
                 to="/"
-                className={`text-sm font-medium transition-colors duration-200 ${
-                  isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'
-                }`}
+                className={`text-sm font-medium transition-colors duration-200 ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'
+                  }`}
               >
                 View Site →
               </Link>

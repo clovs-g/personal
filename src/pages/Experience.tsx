@@ -1,145 +1,102 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Github, Linkedin, Mail } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import SideNavigation from '../components/Layout/SideNavigation';
 
-interface Profile {
-  email: string;
-  github_url: string | null;
-  linkedin_url: string | null;
-}
-
-interface Experience {
+interface ExperienceItem {
   id: string;
-  title: string;
+  position: string;
   company: string;
-  location: string;
-  start_date: string;
-  end_date: string | null;
+  duration: string;
   description: string[];
-  order: number;
 }
+
+const experiences: ExperienceItem[] = [
+  {
+    id: '1',
+    position: 'Trainer and Professional Intern in Network Administration',
+    company: 'SAZIRIS Bujumbura',
+    duration: 'August 2023 - May 2024',
+    description: [
+      'Developed and delivered comprehensive training courses on network setup, configuration, management, virtualization, monitoring, and security',
+      'Taught fundamental computer concepts, covering hardware functionality, modern computing applications, and technological evolution',
+      'Conducted practical training sessions on Windows installation, configuration, file management, and device connectivity',
+      'Provided instruction in Microsoft Word and Excel for professional document creation and data handling',
+      'Trained participants on data organization, information structuring, and practical computer technology applications'
+    ]
+  },
+  {
+    id: '2',
+    position: 'Administrator',
+    company: 'SAZIRIS Bujumbura',
+    duration: 'January 2022 - March 2023',
+    description: [
+      'Enhanced service delivery processes, improving customer satisfaction and reducing post-purchase issues',
+      'Provided excellent after-sales support, resolving complex technical problems and maintaining strong client relationships',
+      'Managed customer solutions, increasing client satisfaction and service utilization',
+      'Developed and implemented strategic plans that improved operational efficiency and supported long-term company growth'
+    ]
+  },
+  {
+    id: '3',
+    position: 'Network Administrator & Customer Manager',
+    company: 'TAO BUSINESS Burundi',
+    duration: 'March 2021 - December 2022',
+    description: [
+      'Maintained network stability through continuous monitoring and rapid troubleshooting, ensuring uninterrupted operations',
+      'Performed critical network maintenance and system updates, enhancing performance and strengthening security defenses',
+      'Ensured customer service systems operated correctly with consistent availability and optimal performance',
+      'Provided comprehensive after-sales support, successfully resolving technical issues and improving customer satisfaction',
+      'Managed diverse customer solutions, enhancing service delivery and client happiness',
+      'Contributed to strategic operational planning, aligning IT systems with business objectives',
+      'Monitored key IT systems and environments, ensuring optimal performance and stability'
+    ]
+  }
+];
 
 const Experience: React.FC = () => {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [experiences, setExperiences] = useState<Experience[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
-      const [profileRes, experiencesRes] = await Promise.all([
-        supabase.from('profile').select('email, github_url, linkedin_url').single(),
-        supabase.from('experiences').select('*').order('order', { ascending: true }),
-      ]);
-
-      if (profileRes.data) setProfile(profileRes.data);
-      if (experiencesRes.data) setExperiences(experiencesRes.data);
-    } catch (error) {
-      console.error('Error loading data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-navy flex items-center justify-center">
-        <div className="text-cyan text-xl">Loading...</div>
-      </div>
-    );
-  }
-
   return (
-    <div className="bg-navy min-h-screen relative">
-      <SideNavigation />
+    <section id="experience" className="mb-24 lg:mb-36">
+      <div>
+        <ol className="group/list">
+          {experiences.map((exp, index) => (
+            <motion.li
+              key={exp.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              viewport={{ once: true }}
+              className="mb-12"
+            >
+              <div className="group relative grid pb-1 transition-all sm:grid-cols-8 sm:gap-8 md:gap-4 lg:hover:!opacity-100 lg:group-hover/list:opacity-50">
+                <div className="absolute -inset-x-4 -inset-y-4 z-0 hidden rounded-md transition motion-reduce:transition-none lg:-inset-x-6 lg:block lg:group-hover:bg-light-navy/50 lg:group-hover:shadow-[inset_0_1px_0_0_rgba(148,163,184,0.1)] lg:group-hover:drop-shadow-lg"></div>
 
-      <div className="max-w-5xl mx-auto px-6 sm:px-12 lg:px-24 py-24">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h1 className="text-lightest-slate text-4xl sm:text-5xl font-bold mb-12">
-            Where I've Worked
-          </h1>
+                <header className="z-10 mb-2 mt-1 text-lg font-semibold uppercase tracking-wide text-slate sm:col-span-2" aria-label={exp.duration}>
+                  {exp.duration}
+                </header>
 
-          <div className="space-y-12 max-w-3xl">
-            {experiences.map((exp, index) => (
-              <motion.div
-                key={exp.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="relative pl-8 border-l-2 border-lightest-navy hover:border-cyan transition-colors duration-200"
-              >
-                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-cyan"></div>
+                <div className="z-10 sm:col-span-6">
+                  <h3 className="font-medium leading-snug text-lightest-slate">
+                    <div>
+                      <div className="inline-flex items-baseline font-medium leading-tight text-lightest-slate hover:text-cyan focus-visible:text-cyan group/link text-base">
+                        <span className="absolute -inset-x-4 -inset-y-2.5 hidden rounded md:-inset-x-6 md:-inset-y-4 lg:block"></span>
+                        <span className="text-xl font-bold">
+                          {exp.position} · <span className="inline-block text-cyan">{exp.company}</span>
+                        </span>
+                      </div>
+                    </div>
+                  </h3>
 
-                <h3 className="text-lightest-slate text-xl font-semibold mb-1">
-                  {exp.title}
-                </h3>
-
-                <div className="flex flex-wrap gap-2 items-center mb-2">
-                  <span className="text-cyan font-mono text-base">{exp.company}</span>
-                  <span className="text-slate">•</span>
-                  <span className="text-slate">{exp.location}</span>
+                  <ul className="mt-4 text-lg leading-relaxed text-slate list-disc pl-4 space-y-3 opacity-80">
+                    {exp.description.map((desc, i) => (
+                      <li key={i}>{desc}</li>
+                    ))}
+                  </ul>
                 </div>
-
-                <p className="text-slate text-sm font-mono mb-4">
-                  {exp.start_date} - {exp.end_date || 'Present'}
-                </p>
-
-                <ul className="space-y-2">
-                  {exp.description.map((desc, i) => (
-                    <li key={i} className="text-slate flex gap-2">
-                      <span className="text-cyan mt-1 flex-shrink-0">▹</span>
-                      <span>{desc}</span>
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+              </div>
+            </motion.li>
+          ))}
+        </ol>
       </div>
-
-      <div className="fixed bottom-8 left-12 hidden lg:flex flex-col items-center gap-6">
-        {profile?.github_url && (
-          <a
-            href={profile.github_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-light-slate hover:text-cyan transition-all duration-200 hover:-translate-y-1"
-          >
-            <Github size={22} />
-          </a>
-        )}
-        {profile?.linkedin_url && (
-          <a
-            href={profile.linkedin_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-light-slate hover:text-cyan transition-all duration-200 hover:-translate-y-1"
-          >
-            <Linkedin size={22} />
-          </a>
-        )}
-        {profile?.email && (
-          <a
-            href={`mailto:${profile.email}`}
-            className="text-light-slate hover:text-cyan transition-all duration-200 hover:-translate-y-1"
-          >
-            <Mail size={22} />
-          </a>
-        )}
-        <div className="w-[1px] h-24 bg-slate"></div>
-      </div>
-    </div>
+    </section>
   );
 };
 

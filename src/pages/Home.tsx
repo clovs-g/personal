@@ -1,49 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Github, Linkedin, Mail, ExternalLink, MapPin } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import Button from '../components/UI/Button';
-import SideNavigation from '../components/Layout/SideNavigation';
 
 interface Profile {
-  name: string;
   title: string;
-  email: string;
-  phone: string;
-  location: string;
   bio: string;
   github_url: string | null;
   linkedin_url: string | null;
-  cv_url: string | null;
-}
-
-interface Experience {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  start_date: string;
-  end_date: string | null;
-  description: string[];
-  order: number;
-}
-
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  technologies: string[];
-  github_url: string | null;
-  live_url: string | null;
-  image_url: string | null;
-  featured: boolean;
-  order: number;
-}
-
-interface Skill {
-  id: string;
-  name: string;
-  category: string;
+  email: string;
 }
 
 const Home: React.FC = () => {
@@ -67,66 +32,33 @@ const Home: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-navy flex items-center justify-center">
+      <div className="min-h-full flex items-center justify-center">
         <div className="text-cyan text-xl">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="bg-navy min-h-screen relative">
-      <SideNavigation />
-
-      <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-24 min-h-screen flex flex-col justify-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="max-w-4xl"
-        >
-          <h1 className="text-lightest-slate text-5xl sm:text-6xl lg:text-7xl font-bold mb-3">
-            Ir Rugendabanga Clovis
-          </h1>
-          <h2 className="text-slate text-3xl sm:text-4xl lg:text-5xl font-semibold mb-8">
-            {profile?.title || 'IT Professional'}
-          </h2>
-          <p className="text-slate text-lg max-w-2xl leading-relaxed">
-            {profile?.bio || "I build accessible, pixel-perfect digital experiences for the web."}
-          </p>
-        </motion.div>
-      </div>
-
-      <div className="fixed bottom-8 left-12 hidden lg:flex flex-col items-center gap-6">
-        {profile?.github_url && (
-          <a
-            href={profile.github_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-light-slate hover:text-cyan transition-all duration-200 hover:-translate-y-1"
-          >
-            <Github size={22} />
-          </a>
-        )}
-        {profile?.linkedin_url && (
-          <a
-            href={profile.linkedin_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-light-slate hover:text-cyan transition-all duration-200 hover:-translate-y-1"
-          >
-            <Linkedin size={22} />
-          </a>
-        )}
-        {profile?.email && (
-          <a
-            href={`mailto:${profile.email}`}
-            className="text-light-slate hover:text-cyan transition-all duration-200 hover:-translate-y-1"
-          >
-            <Mail size={22} />
-          </a>
-        )}
-        <div className="w-[1px] h-24 bg-slate"></div>
-      </div>
+    <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-24 min-h-screen flex flex-col justify-center">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-4xl"
+      >
+        <h1 className="text-lightest-slate text-5xl sm:text-6xl lg:text-7xl font-bold mb-3">
+          Ir Rugendabanga Clovis
+        </h1>
+        <h2 className="text-slate text-3xl sm:text-4xl lg:text-5xl font-semibold mb-8">
+          {profile?.title || 'IT Professional'}
+        </h2>
+        <p className="text-slate text-lg max-w-2xl leading-relaxed mb-8">
+          {profile?.bio || "I build accessible, pixel-perfect digital experiences for the web."}
+        </p>
+        <Button href="/projects" variant="outline" size="lg">
+          Check out my work!
+        </Button>
+      </motion.div>
     </div>
   );
 };

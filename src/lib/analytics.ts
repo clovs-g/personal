@@ -1,7 +1,7 @@
 import { supabase } from './supabase';
 
 // Temporary flag to disable analytics during PostgREST schema cache issues
-const ANALYTICS_ENABLED = false;
+const ANALYTICS_ENABLED = true;
 
 function getSessionId(): string {
   let sessionId = sessionStorage.getItem('analytics_session_id');
@@ -93,13 +93,12 @@ export async function trackProjectView(projectId: string) {
 export async function submitContactMessage(name: string, email: string, message: string) {
   try {
     const { error } = await supabase
-      .from('contact_messages')
+      .from('messages')
       .insert([{
         name,
         email,
         message,
-        session_id: getSessionId(),
-        visitor_id: getVisitorId(),
+        status: 'new'
       }]);
 
     if (error) throw error;
@@ -188,7 +187,7 @@ export const analyticsService = {
     if (!ANALYTICS_ENABLED) return [];
 
     let query = supabase
-      .from('contact_messages')
+      .from('messages')
       .select('*')
       .order('created_at', { ascending: false });
 
@@ -205,7 +204,7 @@ export const analyticsService = {
     if (!ANALYTICS_ENABLED) return 0;
 
     const { count, error } = await supabase
-      .from('contact_messages')
+      .from('messages')
       .select('*', { count: 'exact', head: true })
       .eq('status', 'new');
 

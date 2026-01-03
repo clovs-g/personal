@@ -38,8 +38,11 @@ export const projectsService = {
       .from('projects')
       .select('*')
       .order('created_at', { ascending: false });
-    
+
     if (error) throw error;
+    // Map DB fields to Code fields for convenience if needed, 
+    // but better to keep consistency. I'll stick to DB names here 
+    // and handle mapping in the component if necessary.
     return data;
   },
 
@@ -49,7 +52,7 @@ export const projectsService = {
       .select('*')
       .eq('category', category)
       .order('created_at', { ascending: false });
-    
+
     if (error) throw error;
     return data;
   },
@@ -60,7 +63,7 @@ export const projectsService = {
       .insert([project])
       .select()
       .single();
-    
+
     if (error) throw error;
     return data;
   },
@@ -72,9 +75,30 @@ export const projectsService = {
       .eq('id', id)
       .select()
       .single();
-    
+
     if (error) throw error;
     return data;
+  },
+
+  async uploadImage(file: File) {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `project-${Date.now()}.${fileExt}`;
+    const filePath = `projects/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('documents') // Reusing documents bucket as we know it's configured
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (uploadError) throw uploadError;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('documents')
+      .getPublicUrl(filePath);
+
+    return publicUrl;
   },
 
   async delete(id: string) {
@@ -82,7 +106,7 @@ export const projectsService = {
       .from('projects')
       .delete()
       .eq('id', id);
-    
+
     if (error) throw error;
   }
 };
@@ -93,7 +117,7 @@ export const experienceService = {
       .from('experience')
       .select('*')
       .order('created_at', { ascending: false });
-    
+
     if (error) throw error;
     return data;
   },
@@ -104,7 +128,7 @@ export const experienceService = {
       .insert([experience])
       .select()
       .single();
-    
+
     if (error) throw error;
     return data;
   },
@@ -116,7 +140,7 @@ export const experienceService = {
       .eq('id', id)
       .select()
       .single();
-    
+
     if (error) throw error;
     return data;
   },
@@ -126,7 +150,7 @@ export const experienceService = {
       .from('experience')
       .delete()
       .eq('id', id);
-    
+
     if (error) throw error;
   }
 };
@@ -215,7 +239,7 @@ export const documentsService = {
     const fileName = `${type}-${Date.now()}.${fileExt}`;
     const filePath = `${type}s/${fileName}`;
 
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from('documents')
       .upload(filePath, file, {
         cacheControl: '3600',

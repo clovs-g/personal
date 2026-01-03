@@ -1,168 +1,109 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Github, Linkedin, Mail } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import SideNavigation from '../components/Layout/SideNavigation';
 
-interface Profile {
-  name: string;
-  title: string;
-  email: string;
-  phone: string;
-  location: string;
+interface AboutData {
   bio: string;
-  github_url: string | null;
-  linkedin_url: string | null;
-  cv_url: string | null;
-}
-
-interface Skill {
-  id: string;
-  name: string;
-  category: string;
+  skills: string[];
 }
 
 const About: React.FC = () => {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [skills, setSkills] = useState<Skill[]>([]);
+  const [aboutData, setAboutData] = useState<AboutData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const loadData = async () => {
+      try {
+        const { data, error } = await supabase.from('about').select('*').single();
+        if (error) throw error;
+        if (data) setAboutData(data);
+      } catch (error) {
+        console.error('Error loading about data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
     loadData();
   }, []);
 
-  const loadData = async () => {
-    try {
-      const [profileRes, skillsRes] = await Promise.all([
-        supabase.from('profile').select('*').single(),
-        supabase.from('skills').select('*').order('order', { ascending: true }),
-      ]);
-
-      if (profileRes.data) setProfile(profileRes.data);
-      if (skillsRes.data) setSkills(skillsRes.data);
-    } catch (error) {
-      console.error('Error loading data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const groupedSkills = skills.reduce((acc, skill) => {
-    if (!acc[skill.category]) acc[skill.category] = [];
-    acc[skill.category].push(skill.name);
-    return acc;
-  }, {} as Record<string, string[]>);
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-navy flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="text-cyan text-xl">Loading...</div>
       </div>
     );
   }
 
+  // Fallback to static content if no data is found in Supabase yet
+  const displayBio = aboutData?.bio || `I'm an experienced IT Professional with expertise spanning Network & Service Mobile infrastructure, Full-Stack Web Development, and AI Engineering. With a passion for innovative technology solutions, I specialize in creating robust, scalable systems that drive business success.
+
+My journey in technology has been driven by curiosity and a commitment to continuous learning. From optimizing network infrastructures to developing cutting-edge AI applications, I bring a comprehensive understanding of modern technology stacks and methodologies.
+
+I believe in the power of technology to transform businesses and improve lives. Whether it's building responsive web applications, implementing AI solutions, or designing secure network architectures, I approach each project with dedication, creativity, and technical excellence.`;
+
   return (
-    <div className="bg-navy min-h-screen relative">
-      <SideNavigation />
+    <section id="about" className="mb-24 lg:mb-36">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="space-y-4 text-slate text-lg leading-relaxed max-w-3xl opacity-80 whitespace-pre-wrap">
+          {displayBio}
+        </div>
 
-      <div className="max-w-5xl mx-auto px-6 sm:px-12 lg:px-24 py-24">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h1 className="text-lightest-slate text-4xl sm:text-5xl font-bold mb-8">
-            About Me
-          </h1>
+        <div className="mt-12">
+          <h2 className="text-lightest-slate text-2xl font-semibold mb-8">Skills & Technologies</h2>
 
-          <div className="space-y-8 text-slate text-lg leading-relaxed max-w-3xl">
-            <p>
-              I'm a developer passionate about crafting accessible, pixel-perfect user interfaces
-              that blend thoughtful design with robust engineering. My favorite work lies at the
-              intersection of design and development, creating experiences that not only look great
-              but are meticulously built for performance and usability.
-            </p>
-
-            <p>
-              Currently, I'm an IT Professional at{' '}
-              <span className="text-cyan font-semibold">Hope Africa University</span>, specializing in
-              accessibility. I contribute to the creation and maintenance of digital solutions that
-              ensure platforms meet web accessibility standards and best practices to deliver an
-              inclusive user experience.
-            </p>
-
-            <p>
-              In the past, I've had the opportunity to develop software across a variety of settings
-              from advertising agencies and large corporations to start-ups and small digital product
-              studios. Additionally, I also released a comprehensive video course a few years ago,
-              guiding learners through building web applications.
-            </p>
-
-            <p>
-              In my spare time, I'm usually climbing, playing tennis, hanging out with my wife and
-              two cats, or running around searching for interesting projects.
-            </p>
-          </div>
-
-          {Object.keys(groupedSkills).length > 0 && (
-            <div className="mt-12">
-              <h2 className="text-lightest-slate text-2xl font-semibold mb-6">Skills & Technologies</h2>
-              <div className="space-y-6">
-                {Object.entries(groupedSkills).map(([category, skillList]) => (
-                  <div key={category}>
-                    <h3 className="text-cyan text-sm font-mono mb-3 uppercase tracking-wider">
-                      {category}
-                    </h3>
-                    <div className="flex flex-wrap gap-3">
-                      {skillList.map((skill, index) => (
-                        <span
-                          key={index}
-                          className="bg-lightest-navy text-light-slate px-4 py-2 rounded text-sm font-mono border border-slate/20 hover:border-cyan transition-colors"
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+          <div className="space-y-10">
+            {/* Core Skills */}
+            <div>
+              <h3 className="text-cyan text-sm font-mono mb-4 uppercase tracking-wider">Core Skills</h3>
+              <div className="flex flex-wrap gap-3">
+                {['Network Administration', 'System Virtualization', 'Windows Administration', 'Graphic Design', 'Web Design', 'Data Management'].map((skill, index) => (
+                  <span key={index} className="bg-lightest-navy text-light-slate px-4 py-2 rounded text-lg font-mono border border-slate/20 hover:border-cyan transition-colors">
+                    {skill}
+                  </span>
                 ))}
               </div>
             </div>
-          )}
-        </motion.div>
-      </div>
 
-      <div className="fixed bottom-8 left-12 hidden lg:flex flex-col items-center gap-6">
-        {profile?.github_url && (
-          <a
-            href={profile.github_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-light-slate hover:text-cyan transition-all duration-200 hover:-translate-y-1"
-          >
-            <Github size={22} />
-          </a>
-        )}
-        {profile?.linkedin_url && (
-          <a
-            href={profile.linkedin_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-light-slate hover:text-cyan transition-all duration-200 hover:-translate-y-1"
-          >
-            <Linkedin size={22} />
-          </a>
-        )}
-        {profile?.email && (
-          <a
-            href={`mailto:${profile.email}`}
-            className="text-light-slate hover:text-cyan transition-all duration-200 hover:-translate-y-1"
-          >
-            <Mail size={22} />
-          </a>
-        )}
-        <div className="w-[1px] h-24 bg-slate"></div>
-      </div>
-    </div>
+            {/* Currently Expanding */}
+            <div>
+              <h3 className="text-cyan text-sm font-mono mb-4 uppercase tracking-wider">Currently Expanding</h3>
+              <div className="flex flex-wrap gap-3">
+                {['React.js', 'Node.js (AI-Assisted)', 'Database Design'].map((skill, index) => (
+                  <span key={index} className="bg-lightest-navy text-light-slate px-4 py-2 rounded text-lg font-mono border border-slate/20 hover:border-cyan transition-colors">
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Specialized Areas */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-slate/10">
+              <div>
+                <h4 className="text-white text-sm font-bold mb-3">Networking</h4>
+                <p className="text-slate text-lg opacity-80 leading-relaxed font-mono">Administration, Configuration, Security</p>
+              </div>
+              <div>
+                <h4 className="text-white text-sm font-bold mb-3">Systems</h4>
+                <p className="text-slate text-lg opacity-80 leading-relaxed font-mono">Virtualization, Windows Administration</p>
+              </div>
+              <div>
+                <h4 className="text-white text-sm font-bold mb-3">Development & Design</h4>
+                <p className="text-slate text-lg opacity-80 leading-relaxed font-mono">Web Design, AI-Assisted Dev, Graphic Design</p>
+              </div>
+              <div>
+                <h4 className="text-white text-sm font-bold mb-3">Tools & platforms</h4>
+                <p className="text-slate text-lg opacity-80 leading-relaxed font-mono">MS Office, Kobo Collection, SINUT</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </section>
   );
 };
 

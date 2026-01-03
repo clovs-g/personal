@@ -17,9 +17,6 @@ const AdminProjects: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [editMode, setEditMode] = useState(false);
-  const [editIdx, setEditIdx] = useState<number | null>(null);
-  const [editForm, setEditForm] = useState<Project | null>(null);
-  const [saving, setSaving] = useState(false);
   // Add modal state for new project
   const [showAddModal, setShowAddModal] = useState(false);
 
@@ -140,23 +137,25 @@ const AdminProjects: React.FC = () => {
     setAddLoading(true);
     setAddError('');
     setAddSuccess(false);
+
     // Validate required fields
     if (!addForm.title || !addForm.description || !addForm.tech_stack.length || !addForm.image) {
       setAddError('Please fill all required fields and upload an image.');
       setAddLoading(false);
       return;
     }
-    // Handle image upload (to Supabase Storage or other service)
+
     let imageUrl = '';
     try {
-      // For demo, just use preview. Replace with actual upload logic.
-      imageUrl = addForm.imagePreview;
-      // TODO: Upload to Supabase Storage and get public URL
-    } catch (err) {
-      setAddError('Image upload failed.');
+      // Upload image to Supabase Storage
+      imageUrl = await projectsService.uploadImage(addForm.image);
+    } catch (err: any) {
+      console.error('Image upload error:', err);
+      setAddError(`Image upload failed: ${err.message}`);
       setAddLoading(false);
       return;
     }
+
     try {
       const newProject = {
         title: addForm.title,
@@ -167,17 +166,25 @@ const AdminProjects: React.FC = () => {
         demo_url: addForm.demo_url || null,
         category: addForm.category,
       };
+
       await projectsService.create(newProject);
       setAddSuccess(true);
       setAddLoading(false);
+
       setTimeout(() => {
         handleAddFormReset();
       }, 1200);
+
       // Refresh projects list
       const data = await projectsService.getAll();
       setProjects(data || []);
     } catch (err: any) {
-      setAddError(err.message || 'Failed to add project.');
+      console.error('Create project error:', err);
+      if (err.message?.includes('row-level security')) {
+        setAddError('Permission denied: You do not have admin rights to add projects.');
+      } else {
+        setAddError(err.message || 'Failed to add project.');
+      }
       setAddLoading(false);
     }
   };
@@ -186,20 +193,23 @@ const AdminProjects: React.FC = () => {
     setAddLoading(true);
     setAddError('');
     setAddSuccess(false);
+
     if (!addForm.title || !addForm.description || !addForm.tech_stack.length || !addForm.image) {
       setAddError('Please fill all required fields and upload an image.');
       setAddLoading(false);
       return;
     }
+
     let imageUrl = '';
     try {
-      imageUrl = addForm.imagePreview;
-      // TODO: Upload to Supabase Storage and get public URL
-    } catch (err) {
-      setAddError('Image upload failed.');
+      imageUrl = await projectsService.uploadImage(addForm.image);
+    } catch (err: any) {
+      console.error('Image upload error:', err);
+      setAddError(`Image upload failed: ${err.message}`);
       setAddLoading(false);
       return;
     }
+
     try {
       const newProject = {
         title: addForm.title,
@@ -210,9 +220,11 @@ const AdminProjects: React.FC = () => {
         demo_url: addForm.demo_url || null,
         category: addForm.category,
       };
+
       await projectsService.create(newProject);
       setAddSuccess(true);
       setAddLoading(false);
+
       setAddForm({
         title: '',
         image: null,
@@ -223,11 +235,17 @@ const AdminProjects: React.FC = () => {
         tech_stack: [],
         category: 'web',
       });
+
       // Refresh projects list
       const data = await projectsService.getAll();
       setProjects(data || []);
     } catch (err: any) {
-      setAddError(err.message || 'Failed to add project.');
+      console.error('Create project error:', err);
+      if (err.message?.includes('row-level security')) {
+        setAddError('Permission denied: You do not have admin rights to add projects.');
+      } else {
+        setAddError(err.message || 'Failed to add project.');
+      }
       setAddLoading(false);
     }
   };
@@ -249,13 +267,9 @@ const AdminProjects: React.FC = () => {
   };
   const handleEditAll = () => {
     setEditMode(true);
-    setEditIdx(null);
-    setEditForm(null);
   };
   const handleCancel = () => {
     setEditMode(false);
-    setEditIdx(null);
-    setEditForm(null);
   };
   const handleSave = async () => {
     // Implement save logic for all projects (batch or per project)
@@ -279,22 +293,8 @@ const AdminProjects: React.FC = () => {
         setProjects(data || []);
       } catch (error) {
         console.error('Admin: Error loading projects from database:', error);
-        console.log('Admin: Loading fallback demo data...');
-        const demoProjects: Project[] = [
-          {
-            id: '1',
-            title: 'Network Infrastructure Optimization',
-            description: 'Comprehensive network redesign for a large enterprise, improving performance by 40% and reducing latency by 60%.',
-            tech_stack: ['Cisco', 'MPLS', 'BGP', 'OSPF', 'SD-WAN'],
-            image_url: 'https://images.pexels.com/photos/2881232/pexels-photo-2881232.jpeg',
-            repo_url: '',
-            demo_url: '',
-            category: 'network',
-            created_at: '',
-            updated_at: '',
-          },
-        ];
-        setProjects(demoProjects);
+        // Fallback to empty list or handle error UI as needed
+        setProjects([]);
       }
       setLoading(false);
     };
@@ -477,14 +477,14 @@ const AdminProjects: React.FC = () => {
           </Button>
           {editMode ? (
             <>
-              <Button onClick={handleSave} loading={saving} className="mr-2">Save</Button>
+              <Button onClick={handleSave} className="mr-2">Save</Button>
               <Button onClick={handleCancel} variant="outline">Cancel</Button>
             </>
           ) : (
             <Button onClick={handleEditAll}>Edit</Button>
           )}
-    </div>
-    {/* Header */}
+        </div>
+        {/* Header */}
         <h1 className="text-4xl sm:text-5xl font-bold mb-6">Projects</h1>
         <p className="text-lg max-w-2xl mx-auto mb-8">Explore my work across networking, web, and AI engineering.</p>
         {/* Category Filter & Search */}
@@ -529,7 +529,7 @@ const AdminProjects: React.FC = () => {
                     alt={project.title}
                     className="rounded-lg mb-4 object-cover h-40 w-full"
                     loading={index < 6 ? "eager" : "lazy"}
-                    fetchpriority={index < 3 ? "high" : "auto"}
+                    fetchPriority={index < 3 ? "high" : "auto"}
                   />
                   <h3 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>{project.title}</h3>
                   <p className={`text-base mb-4 flex-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{project.description}</p>
