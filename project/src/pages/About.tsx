@@ -35,13 +35,11 @@ const About: React.FC = () => {
   }
 
   // Fallback to static content if no data is found in Supabase yet
-  const displayBio = aboutData?.bio || `I'm an IT professional with a Bachelor's degree in Mobile Network and Service from Hope Africa University, now expanding my expertise into web development and design. My academic foundation, combined with certifications in Advanced Networking from Makerere University and Computer Networking from JRS Kampala, gives me a comprehensive technical background that I bring to every project.
+  const displayBio = aboutData?.bio || `I'm an experienced IT Professional with expertise spanning Network & Service Mobile infrastructure, Full-Stack Web Development, and AI Engineering. With a passion for innovative technology solutions, I specialize in creating robust, scalable systems that drive business success.
 
-My professional journey spans network administration, system configuration, and IT infrastructure management across companies in Burundi and Uganda. I've also served as a trainer at SAZIRIS Bujumbura, where I developed and delivered courses on network administration, system virtualization, and office automation - an experience that deepened my understanding of how to make technology accessible and user-friendly.
+My journey in technology has been driven by curiosity and a commitment to continuous learning. From optimizing network infrastructures to developing cutting-edge AI applications, I bring a comprehensive understanding of modern technology stacks and methodologies.
 
-Recently, I've been channeling this technical expertise into web development, leveraging AI tools to create polished, accessible digital experiences. My training spans Microsoft Office Suite, data management tools (Kobo Collection, SINUT), and system administration, giving me insight into building solutions that are not just visually appealing but also secure, performant, and reliable.
-
-I'm particularly passionate about the intersection of robust engineering and thoughtful design - creating interfaces that work seamlessly for diverse users. My multilingual abilities (English, French, Swahili) and cross-cultural experience position me to build inclusive digital solutions that serve global audiences.`;
+I believe in the power of technology to transform businesses and improve lives. Whether it's building responsive web applications, implementing AI solutions, or designing secure network architectures, I approach each project with dedication, creativity, and technical excellence.`;
 
   return (
     <section id="about" className="mb-24 lg:mb-36">
