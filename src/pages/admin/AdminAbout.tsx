@@ -39,8 +39,8 @@ const AdminAbout: React.FC = () => {
             email: 'clovisrugendabanga4@gmail.com',
             phone: '0702913471',
             location: 'Uganda Kampala',
-            linkedin: 'https://linkedin.com/in/clovis',
-            github: 'https://github.com/clovis'
+            linkedin: 'https://www.linkedin.com/feed/',
+            github: 'https://github.com/'
           },
           resume_url: '',
           updated_at: '',
