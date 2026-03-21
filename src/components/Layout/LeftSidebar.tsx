@@ -158,8 +158,8 @@ const LeftSidebar: React.FC = () => {
                                 <div className="mt-auto">
                                     <h3 className="text-xs font-bold uppercase tracking-widest text-[#8892b0] mb-6">Socials</h3>
                                     <ul className="flex items-center gap-6 pb-8" aria-label="Social media mobile">
-                                        <SocialIcon href={profile?.github_url || "https://github.com/"} icon={<Github size={28} />} label="GitHub" />
-                                        <SocialIcon href={profile?.linkedin_url || "https://www.linkedin.com/feed/"} icon={<Linkedin size={28} />} label="LinkedIn" />
+                                        <SocialIcon href="https://github.com/clovs-g" icon={<Github size={28} />} label="GitHub" />
+                                        <SocialIcon href="https://www.linkedin.com/in/clovis-deklo-268016392/" icon={<Linkedin size={28} />} label="LinkedIn" />
                                         <SocialIcon href="https://codepen.io" icon={<Codepen size={28} />} label="CodePen" />
                                         <SocialIcon href="https://instagram.com" icon={<Instagram size={28} />} label="Instagram" />
                                         <SocialIcon href="https://www.goodreads.com" icon={<GoodreadsIcon size={28} />} label="Goodreads" />
@@ -172,8 +172,8 @@ const LeftSidebar: React.FC = () => {
             </div>
 
             <ul className="hidden lg:flex items-center gap-6 mt-12 lg:mt-16 pb-8 lg:pb-0" aria-label="Social media">
-                <SocialIcon href={profile?.github_url || "https://github.com/"} icon={<Github size={28} />} label="GitHub" />
-                <SocialIcon href={profile?.linkedin_url || "https://www.linkedin.com/feed/"} icon={<Linkedin size={28} />} label="LinkedIn" />
+                <SocialIcon href="https://github.com/clovs-g" icon={<Github size={28} />} label="GitHub" />
+                <SocialIcon href="https://www.linkedin.com/in/clovis-deklo-268016392/" icon={<Linkedin size={28} />} label="LinkedIn" />
                 <SocialIcon href="https://codepen.io" icon={<Codepen size={28} />} label="CodePen" />
                 <SocialIcon href="https://instagram.com" icon={<Instagram size={28} />} label="Instagram" />
                 <SocialIcon href="https://www.goodreads.com" icon={<GoodreadsIcon size={28} />} label="Goodreads" />
