@@ -32,8 +32,12 @@ function AnalyticsTracker() {
   const location = useLocation();
 
   useEffect(() => {
+    if (location.pathname.startsWith('/admin')) {
+      return;
+    }
+
     trackPageView(location.pathname, document.title);
-  }, [location]);
+  }, [location.pathname]);
 
   return null;
 }
