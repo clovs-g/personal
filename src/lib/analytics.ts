@@ -273,7 +273,7 @@ export const analyticsService = {
 
     const { data, error } = await supabase
       .from('page_views')
-      .select('page_path, page_title, device_type, created_at')
+      .select('page_path, page_title, device_type, created_at, country, region, city')
       .order('created_at', { ascending: false })
       .limit(limit);
 

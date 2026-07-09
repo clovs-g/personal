@@ -23,6 +23,9 @@ interface Activity {
   page_title: string;
   device_type: string;
   created_at: string;
+  country?: string | null;
+  region?: string | null;
+  city?: string | null;
 }
 
 interface Message {
@@ -207,6 +210,19 @@ const Dashboard: React.FC = () => {
     return `${Math.floor(seconds / 86400)} days ago`;
   };
 
+  const getLocationDisplay = (activity: Activity) => {
+    const city = activity.city?.trim();
+    const region = activity.region?.trim();
+    const country = activity.country?.trim();
+
+    if (city && country) return `${city}, ${country}`;
+    if (city && region) return `${city}, ${region}`;
+    if (city) return city;
+    if (country) return country;
+    if (region) return region;
+    return 'Unknown location';
+  };
+
   const handleStatClick = (title: string) => {
     let targetId = '';
 
@@ -341,22 +357,26 @@ const Dashboard: React.FC = () => {
                   No recent activity yet. Visitors will appear here once they start browsing your portfolio.
                 </p>
               ) : (
-                recentActivities.map((activity, index) => (
-                  <div key={index} className="flex items-center space-x-4">
-                    <div className={`w-2 h-2 rounded-full ${activity.device_type === 'mobile' ? 'bg-green-500' :
-                      activity.device_type === 'tablet' ? 'bg-purple-500' :
-                        'bg-blue-500'
-                      }`} />
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                        {activity.page_title || activity.page_path} visited from {activity.device_type}
-                      </p>
-                      <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
-                        {getTimeAgo(activity.created_at)}
-                      </p>
+                recentActivities.map((activity, index) => {
+                  const location = getLocationDisplay(activity);
+
+                  return (
+                    <div key={index} className="flex items-center space-x-4">
+                      <div className={`w-2 h-2 rounded-full ${activity.device_type === 'mobile' ? 'bg-green-500' :
+                        activity.device_type === 'tablet' ? 'bg-purple-500' :
+                          'bg-blue-500'
+                        }`} />
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                          {activity.page_title || activity.page_path} visited from {activity.device_type}
+                        </p>
+                        <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
+                          {location} • {getTimeAgo(activity.created_at)}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </Card>
