@@ -1,58 +1,64 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { experienceService } from '../lib/supabase';
+import LoadingSpinner from '../components/UI/LoadingSpinner';
 
 interface ExperienceItem {
   id: string;
   position: string;
   company: string;
   duration: string;
-  description: string[];
+  description: string;
+  skills: string[];
 }
 
-const experiences: ExperienceItem[] = [
-  {
-    id: '1',
-    position: 'Trainer and Professional Intern in Network Administration',
-    company: 'SAZIRIS Bujumbura',
-    duration: 'August 2023 - May 2024',
-    description: [
-      'Developed and delivered comprehensive training courses on network setup, configuration, management, virtualization, monitoring, and security',
-      'Taught fundamental computer concepts, covering hardware functionality, modern computing applications, and technological evolution',
-      'Conducted practical training sessions on Windows installation, configuration, file management, and device connectivity',
-      'Provided instruction in Microsoft Word and Excel for professional document creation and data handling',
-      'Trained participants on data organization, information structuring, and practical computer technology applications'
-    ]
-  },
-  {
-    id: '2',
-    position: 'Administrator',
-    company: 'SAZIRIS Bujumbura',
-    duration: 'January 2022 - March 2023',
-    description: [
-      'Enhanced service delivery processes, improving customer satisfaction and reducing post-purchase issues',
-      'Provided excellent after-sales support, resolving complex technical problems and maintaining strong client relationships',
-      'Managed customer solutions, increasing client satisfaction and service utilization',
-      'Developed and implemented strategic plans that improved operational efficiency and supported long-term company growth'
-    ]
-  },
-  {
-    id: '3',
-    position: 'Network Administrator & Customer Manager',
-    company: 'TAO BUSINESS Burundi',
-    duration: 'March 2021 - December 2022',
-    description: [
-      'Maintained network stability through continuous monitoring and rapid troubleshooting, ensuring uninterrupted operations',
-      'Performed critical network maintenance and system updates, enhancing performance and strengthening security defenses',
-      'Ensured customer service systems operated correctly with consistent availability and optimal performance',
-      'Provided comprehensive after-sales support, successfully resolving technical issues and improving customer satisfaction',
-      'Managed diverse customer solutions, enhancing service delivery and client happiness',
-      'Contributed to strategic operational planning, aligning IT systems with business objectives',
-      'Monitored key IT systems and environments, ensuring optimal performance and stability'
-    ]
-  }
-];
-
 const Experience: React.FC = () => {
+  const [experiences, setExperiences] = useState<ExperienceItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadExperiences = async () => {
+      try {
+        const data = await experienceService.getAll();
+        setExperiences((data || []) as ExperienceItem[]);
+      } catch (err) {
+        console.error('Error loading experience data:', err);
+        setError('Unable to load experience data right now.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadExperiences();
+  }, []);
+
+  if (loading) {
+    return (
+      <section id="experience" className="mb-24 lg:mb-36">
+        <div className="flex justify-center py-16">
+          <LoadingSpinner size="lg" />
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section id="experience" className="mb-24 lg:mb-36">
+        <p className="text-lg text-slate">{error}</p>
+      </section>
+    );
+  }
+
+  if (experiences.length === 0) {
+    return (
+      <section id="experience" className="mb-24 lg:mb-36">
+        <p className="text-lg text-slate">No experience entries available yet.</p>
+      </section>
+    );
+  }
+
   return (
     <section id="experience" className="mb-24 lg:mb-36">
       <div>
@@ -85,11 +91,22 @@ const Experience: React.FC = () => {
                     </div>
                   </h3>
 
-                  <ul className="mt-4 text-lg leading-relaxed text-slate list-disc pl-4 space-y-3 opacity-80">
-                    {exp.description.map((desc, i) => (
-                      <li key={i}>{desc}</li>
-                    ))}
-                  </ul>
+                  <p className="mt-4 text-lg leading-relaxed text-slate opacity-80">
+                    {exp.description}
+                  </p>
+
+                  {exp.skills && exp.skills.length > 0 && (
+                    <ul className="mt-4 flex flex-wrap gap-2">
+                      {exp.skills.map((skill, i) => (
+                        <li
+                          key={`${exp.id}-${skill}-${i}`}
+                          className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-sm text-cyan"
+                        >
+                          {skill}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
             </motion.li>
