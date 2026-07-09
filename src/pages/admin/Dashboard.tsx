@@ -7,7 +7,8 @@ import {
   MessageSquare,
   Calendar,
   Globe,
-  Smartphone
+  Smartphone,
+  Trash2
 } from 'lucide-react';
 import { useThemeStore } from '../../stores/themeStore';
 import Card from '../../components/UI/Card';
@@ -154,6 +155,44 @@ const Dashboard: React.FC = () => {
       } catch (error) {
         console.error('Error marking message as read:', error);
       }
+    }
+  };
+
+  const handleDeleteMessage = async (e: React.MouseEvent, message: Message) => {
+    e.stopPropagation(); // Prevent opening the message modal
+    
+    // Show confirmation dialog
+    const confirmed = window.confirm(`Delete this message from ${message.name}?`);
+    if (!confirmed) return;
+
+    try {
+      const { error } = await supabase
+        .from('messages')
+        .delete()
+        .eq('id', message.id);
+
+      if (error) throw error;
+
+      // Remove message from local state immediately (optimistic update)
+      setMessages(prev => prev.filter(m => m.id !== message.id));
+
+      // Close modal if this message was selected
+      if (selectedMessage?.id === message.id) {
+        setSelectedMessage(null);
+      }
+
+      // Update message count in stats
+      if (message.status === 'new') {
+        setStats(prev => ({
+          ...prev,
+          contactMessages: Math.max(0, prev.contactMessages - 1)
+        }));
+      }
+
+      toast.success('Message deleted successfully');
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      toast.error('Failed to delete message');
     }
   };
 
@@ -423,6 +462,7 @@ const Dashboard: React.FC = () => {
                       <th className={`pb-3 font-semibold ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>Message</th>
                       <th className={`pb-3 font-semibold ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>Date</th>
                       <th className={`pb-3 font-semibold ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>Status</th>
+                      <th className={`pb-3 font-semibold ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -444,13 +484,25 @@ const Dashboard: React.FC = () => {
                         <td className={`py-4 pr-4 ${isDark ? 'text-gray-400' : 'text-gray-500'} whitespace-nowrap`}>
                           {new Date(msg.created_at).toLocaleDateString()}
                         </td>
-                        <td className="py-4">
+                        <td className="py-4 pr-4">
                           <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${msg.status === 'new'
                             ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
                             : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
                             }`}>
                             {msg.status === 'new' ? 'New' : 'Read'}
                           </span>
+                        </td>
+                        <td className="py-4">
+                          <button
+                            onClick={(e) => handleDeleteMessage(e, msg)}
+                            className={`p-2 rounded transition-colors ${isDark
+                              ? 'text-red-400 hover:bg-red-900/30 hover:text-red-300'
+                              : 'text-red-600 hover:bg-red-100 hover:text-red-700'
+                              }`}
+                            title="Delete message"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </td>
                       </tr>
                     ))}

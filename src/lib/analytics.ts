@@ -56,19 +56,54 @@ export async function trackPageView(pagePath: string, pageTitle: string) {
   if (!ANALYTICS_ENABLED) return;
 
   try {
-    await supabase
-      .from('page_views')
-      .insert({
-        page_path: pagePath,
-        page_title: pageTitle,
-        referrer: document.referrer || 'direct',
-        user_agent: navigator.userAgent,
-        device_type: getDeviceType(),
-        browser: getBrowser(),
-        os: getOS(),
-        session_id: getSessionId(),
-        visitor_id: getVisitorId(),
+    const trackingData = {
+      pagePath,
+      pageTitle,
+      referrer: document.referrer || 'direct',
+      userAgent: navigator.userAgent,
+      deviceType: getDeviceType(),
+      browser: getBrowser(),
+      os: getOS(),
+      sessionId: getSessionId(),
+      visitorId: getVisitorId(),
+    };
+
+    // Try to use API endpoint (production on Vercel)
+    try {
+      const response = await fetch('/api/track-page-view', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(trackingData),
       });
+
+      if (!response.ok) {
+        console.error('API tracking failed:', response.statusText);
+        // Fall back to direct Supabase insert
+        throw new Error('API route unavailable');
+      }
+      return;
+    } catch (apiError) {
+      // Fall back to direct Supabase insert (development environment)
+      console.debug('Using fallback Supabase insert for analytics');
+      await supabase
+        .from('page_views')
+        .insert({
+          page_path: pagePath,
+          page_title: pageTitle,
+          referrer: document.referrer || 'direct',
+          user_agent: navigator.userAgent,
+          device_type: getDeviceType(),
+          browser: getBrowser(),
+          os: getOS(),
+          session_id: getSessionId(),
+          visitor_id: getVisitorId(),
+          country: null,
+          region: null,
+          city: null,
+        });
+    }
   } catch (error) {
     // Silently fail - analytics should not break the user experience
   }
